@@ -42,3 +42,10 @@ h1 {
   font-size: 1.5rem;
   width: 100%;
 }
+
+.row {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  background-color: #bbeffd;
+  border: 1px solid black;
+}

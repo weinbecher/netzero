@@ -1,4 +1,5 @@
 import React from "react";
+import Geocode from "react-geocode";
 import {
   GoogleMap,
   useLoadScript,
@@ -72,6 +73,71 @@ export default function MapComponent() {
     mapRef.current.setZoom(14);
   }, []);
 
+//   const address = (( latitude, longitude ) => {
+//     Geocode.setApiKey("AIzaSyCouekgXHz8Yzs4OS2wsGNWBT6lzF3YXu0");
+//     Geocode.fromLatLng(latitude, longitude).then(
+//       (response) => {
+//         address = response.results[0].formatted_address;
+//         let city, state, country;
+//         for (let i = 0; i < response.results[0].address_components.length; i++) {
+//           for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
+//             switch (response.results[0].address_components[i].types[j]) {
+//               case "locality":
+//                 city = response.results[0].address_components[i].long_name;
+//                 break;
+//               case "administrative_area_level_1":
+//                 state = response.results[0].address_components[i].long_name;
+//                 break;
+//               case "country":
+//                 country = response.results[0].address_components[i].long_name;
+//                 break;
+//             }
+//           }
+//         }
+//         console.log(city, state, country);
+//         console.log(address);
+//       },
+//       (error) => {
+//         console.error(error);
+//       }
+//     );}
+// )
+
+// const [location, setLocation] = React.useState([]);
+
+  let address = ""
+
+  function displayLocation(latitude,longitude ){
+    Geocode.setApiKey("AIzaSyCouekgXHz8Yzs4OS2wsGNWBT6lzF3YXu0");
+    Geocode.fromLatLng(latitude, longitude).then(
+      (response) => {
+       let address = response.results[0].formatted_address;
+        let city, state, country;
+        for (let i = 0; i < response.results[0].address_components.length; i++) {
+          for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
+            switch (response.results[0].address_components[i].types[j]) {
+              case "locality":
+                city = response.results[0].address_components[i].long_name;
+                break;
+              case "administrative_area_level_1":
+                state = response.results[0].address_components[i].long_name;
+                break;
+              case "country":
+                country = response.results[0].address_components[i].long_name;
+                break;
+            }
+          }
+        }
+        console.log(city, state, country);
+        console.log(address);
+        // setLocation(address);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
   if (loadError) return "Error";
   if (!isLoaded) return "Loading...";
 
@@ -114,6 +180,9 @@ export default function MapComponent() {
               <h2>
             Location 
               </h2>
+              {/* <p onChange = {displayLocation}>{location}</p> */}
+              <p onChange = {displayLocation}>{address}</p>
+
               <h3>latitude{selected.lat}, longitude{selected.lng}</h3>
               <p>As in {formatRelative(selected.time, new Date())}</p>
             </div>
@@ -122,6 +191,16 @@ export default function MapComponent() {
       </GoogleMap>
     </div>
   );
+
+
+
+
+
+
+
+
+
+
 
 
 
