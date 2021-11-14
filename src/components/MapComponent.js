@@ -7,6 +7,8 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 
+import SearchComponent from './SearchComponent';
+
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -64,6 +66,7 @@ export default function MapComponent() {
   }, []);
 
   const mapRef = React.useRef();
+
   const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
   }, []);
@@ -73,41 +76,12 @@ export default function MapComponent() {
     mapRef.current.setZoom(14);
   }, []);
 
-//   const address = (( latitude, longitude ) => {
-//     Geocode.setApiKey("AIzaSyCouekgXHz8Yzs4OS2wsGNWBT6lzF3YXu0");
-//     Geocode.fromLatLng(latitude, longitude).then(
-//       (response) => {
-//         address = response.results[0].formatted_address;
-//         let city, state, country;
-//         for (let i = 0; i < response.results[0].address_components.length; i++) {
-//           for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
-//             switch (response.results[0].address_components[i].types[j]) {
-//               case "locality":
-//                 city = response.results[0].address_components[i].long_name;
-//                 break;
-//               case "administrative_area_level_1":
-//                 state = response.results[0].address_components[i].long_name;
-//                 break;
-//               case "country":
-//                 country = response.results[0].address_components[i].long_name;
-//                 break;
-//             }
-//           }
-//         }
-//         console.log(city, state, country);
-//         console.log(address);
-//       },
-//       (error) => {
-//         console.error(error);
-//       }
-//     );}
-// )
 
-// const [location, setLocation] = React.useState([]);
+const [location, setLocation] = React.useState("location");
 
-  let address = ""
 
-  function displayLocation(latitude,longitude ){
+function displayLocation(latitude,longitude ){
+    // e.preventDefault();
     Geocode.setApiKey("AIzaSyCouekgXHz8Yzs4OS2wsGNWBT6lzF3YXu0");
     Geocode.fromLatLng(latitude, longitude).then(
       (response) => {
@@ -128,18 +102,16 @@ export default function MapComponent() {
             }
           }
         }
-        console.log(city, state, country);
-        console.log(address);
-        // setLocation(address);
+        setLocation(address);
       },
       (error) => {
         console.error(error);
       }
     );
-  }
+}
 
-  if (loadError) return "Error";
-  if (!isLoaded) return "Loading...";
+if (loadError) return "Error";
+if (!isLoaded) return "Loading...";
 
   return (
   
@@ -177,13 +149,8 @@ export default function MapComponent() {
             }}
           >
             <div>
-              <h2>
-            Location 
-              </h2>
-              {/* <p onChange = {displayLocation}>{location}</p> */}
-              <p onChange = {displayLocation}>{address}</p>
-
-              <h3>latitude{selected.lat}, longitude{selected.lng}</h3>
+              <h2>Location</h2>
+              <h3 onChange = {displayLocation(selected.lat, selected.lng)}>{location}</h3>
               <p>As in {formatRelative(selected.time, new Date())}</p>
             </div>
           </InfoWindow>
@@ -191,16 +158,7 @@ export default function MapComponent() {
       </GoogleMap>
     </div>
   );
-
-
-
-
-
-
-
-
-
-
+}
 
 
 
@@ -263,5 +221,4 @@ function Search({ panTo }) {
   );
 }
 
-}
 
