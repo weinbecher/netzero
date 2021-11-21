@@ -13,26 +13,27 @@ import { formatRelative } from "date-fns";
 import "@reach/combobox/styles.css";
 import mapStyles from "../mapStyles";
 
+const libraries = ["places"];
+const mapContainerStyle = {
+  height: "800px",
+  width: "1000px",
+};
+//custom options of google map
+const options = {
+  styles: mapStyles,
+  disableDefaultUI: true,
+  zoomControl: true,
+};
+
+// find location on https://www.latlong.net/
+
+const center = {
+  lat: 51.507351,
+  lng: -0.127758,
+};
+
 
 export default function MapComponent({parentCallback }) {
-  const libraries = ["places"];
-  const mapContainerStyle = {
-    height: "800px",
-    width: "1000px",
-  };
-  //custom options of google map
-  const options = {
-    styles: mapStyles,
-    disableDefaultUI: true,
-    zoomControl: true,
-  };
-
-  // find location on https://www.latlong.net/
-
-  const center = {
-    lat: 51.507351,
-    lng: -0.127758,
-  };
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,

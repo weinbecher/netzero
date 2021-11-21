@@ -84,6 +84,23 @@ function WeatherComponent({markers}) {
             <Tooltip />
           </LineChart>
 
+          <LineChart
+            width={600}
+            height={300}
+            data={data.list}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <Line type="monotone" dataKey="main.aqi" stroke="#8884d8" />
+            <XAxis
+              dataKey="dt"
+              domain={['dataMin', 'dataMax']}
+              type="number"
+            />
+            <YAxis />
+            <Tooltip />
+          </LineChart>
+
+
         <h3> Location </h3>
 
         <div className="date-time-picker-start">
