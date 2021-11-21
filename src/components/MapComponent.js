@@ -1,4 +1,4 @@
-import React from "react";
+import React,  {useState} from "react";
 import Geocode from "react-geocode";
 import {
   GoogleMap,
@@ -8,26 +8,13 @@ import {
 } from "@react-google-maps/api";
 
 import SearchComponent from './SearchComponent';
-
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from "use-places-autocomplete";
-
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxPopover,
-  ComboboxList,
-  ComboboxOption,
-} from "@reach/combobox";
 import { formatRelative } from "date-fns";
 
 import "@reach/combobox/styles.css";
 import mapStyles from "../mapStyles";
 
 
-export default function MapComponent() {
+export default function MapComponent({parentCallback }) {
   const libraries = ["places"];
   const mapContainerStyle = {
     height: "800px",
@@ -51,7 +38,15 @@ export default function MapComponent() {
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries,
   });
+
   const [markers, setMarkers] = React.useState([]);
+
+  const sendData = () => {
+    parentCallback(markers);
+  };
+
+  // console.log(markers);
+
   const [selected, setSelected] = React.useState(null);
 
   const onMapClick = React.useCallback((e) => {
@@ -77,37 +72,39 @@ export default function MapComponent() {
   }, []);
 
 
-const [location, setLocation] = React.useState("location");
+const [location, setLocation] = React.useState("");
 
 
 function displayLocation(latitude,longitude ){
     // e.preventDefault();
-    Geocode.setApiKey("AIzaSyCouekgXHz8Yzs4OS2wsGNWBT6lzF3YXu0");
+    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
     Geocode.fromLatLng(latitude, longitude).then(
       (response) => {
        let address = response.results[0].formatted_address;
-        let city, state, country;
-        for (let i = 0; i < response.results[0].address_components.length; i++) {
-          for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
-            switch (response.results[0].address_components[i].types[j]) {
-              case "locality":
-                city = response.results[0].address_components[i].long_name;
-                break;
-              case "administrative_area_level_1":
-                state = response.results[0].address_components[i].long_name;
-                break;
-              case "country":
-                country = response.results[0].address_components[i].long_name;
-                break;
-            }
-          }
-        }
         setLocation(address);
-      },
+        },
       (error) => {
         console.error(error);
       }
     );
+}
+
+const api = {
+  key: "c689226726c66056c7e27a6cf24a57ff",
+  base: "http://api.openweathermap.org/data/2.5/"
+}
+
+const [pollution, setPollution] = useState({});
+
+const getPollution = async() => {
+  markers.forEach(marker => {
+   fetch(`${api.base}air_pollution?lat=${marker.lat}&lon=${marker.lng}&APPID=${api.key}`)
+   .then(res => res.json())
+   .then(result => {
+     setPollution(result);
+     // console.log(result);
+   })
+    });
 }
 
 if (loadError) return "Error";
@@ -120,12 +117,12 @@ if (!isLoaded) return "Loading...";
         netZero
       </h1>
 
-      <Search panTo={panTo} />
+      <SearchComponent panTo={panTo} />
 
       <GoogleMap
         id="map"
         mapContainerStyle={mapContainerStyle}
-        zoom={5} // how close up you want the map to be
+        zoom={6} // how close up you want the map to be
         center={center}
         options={options}
         onClick={onMapClick}
@@ -137,6 +134,7 @@ if (!isLoaded) return "Loading...";
             position={{ lat: marker.lat, lng: marker.lng }}
             onClick={() => {
               setSelected(marker);
+              sendData();
             }}
           />
         ))}
@@ -149,9 +147,24 @@ if (!isLoaded) return "Loading...";
             }}
           >
             <div>
-              <h2>Location</h2>
               <h3 onChange = {displayLocation(selected.lat, selected.lng)}>{location}</h3>
               <p>As in {formatRelative(selected.time, new Date())}</p>
+              <button onClick = {getPollution}>Get pollution</button>
+              {(typeof pollution.list != "undefined" && pollution.list.length === 1) ? (
+              <div>
+                <div className="pollution-box">
+                  <div className="pollutionCO">CO: {pollution.list[0].components.co}</div>
+                  <div className="pollutionNH3">NH3: {pollution.list[0].components.nh3}</div>
+                  <div className="pollutionNO">NO: {pollution.list[0].components.no}</div>
+                  <div className="pollutionNO2">NO2: {pollution.list[0].components.no2}</div>
+                  <div className="pollutionO3">O3: {pollution.list[0].components.o3}</div>
+                  <div className="pollutionPM2_5">PM2_5: {pollution.list[0].components.pm2_5}</div>
+                  <div className="pollutionPM10">PM10: {pollution.list[0].components.pm10}</div>
+                  <div className="pollutionSO2">SO2: {pollution.list[0].components.so2}</div>
+                </div>
+              </div>
+              ) : ('')}
+              
             </div>
           </InfoWindow>
         ) : null}
@@ -161,64 +174,5 @@ if (!isLoaded) return "Loading...";
 }
 
 
-
-
-function Search({ panTo }) {
-  const {
-    ready,
-    value,
-    suggestions: { status, data },
-    setValue,
-    clearSuggestions,
-  } = usePlacesAutocomplete({
-    requestOptions: {
-      location: { lat: () => 51.507351, lng: () => -0.127758},
-      radius: 200 * 1000,
-    },
-  });
-
-  // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompletionRequest
-
-  const handleInput = (e) => {
-    setValue(e.target.value);
-  };
-
-  const handleSelect = async (address) => {
-    setValue(address, false);
-    clearSuggestions();
-
-    try {
-      const results = await getGeocode({ address });
-      const { lat, lng } = await getLatLng(results[0]);
-      panTo({ lat, lng });
-      //set a marker after search
-      // setMarkers({lat, lng });
-    } catch (error) {
-      console.log("😱 Error: ", error);
-    }
-  };
-
-  return (
-    <div className="search">
-      <Combobox onSelect={handleSelect}>
-        {/* <Combobox onSelect = {(address)=> {console.log(address);}} */}
-        <ComboboxInput
-          value={value}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder="Search your location"
-        />
-        <ComboboxPopover>
-          <ComboboxList>
-            {status === "OK" &&
-              data.map(({ id, description }) => (
-                <ComboboxOption key={id} value={description} />
-              ))}
-          </ComboboxList>
-        </ComboboxPopover>
-      </Combobox>
-    </div>
-  );
-}
-
+export const MemoizedLocation = React.memo(MapComponent);
 
