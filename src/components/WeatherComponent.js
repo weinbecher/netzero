@@ -53,11 +53,12 @@ function WeatherComponent({markers}) {
 
 
   const getDateRangePollution = async () => {
-    fetch(`${api.base}air_pollution/history?lat=${markers[0].lat}&lon=${markers[0].lng}&start=${startDateTimestamp}&end=${endDateTimestamp}&APPID=${api.key}`)
+    fetch(`${api.base}air_pollution/history?lat=${markers[markers.length -1].lat}&lon=${markers[markers.length -1].lng}&start=${startDateTimestamp}&end=${endDateTimestamp}&APPID=${api.key}`)
     .then(res => res.json())
     .then(resultRange => {
       setPollution(resultRange);
     });
+
   }
 
   const data = pollution;

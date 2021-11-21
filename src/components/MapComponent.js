@@ -73,7 +73,7 @@ export default function MapComponent({parentCallback }) {
   }, []);
 
 
-const [location, setLocation] = React.useState("");
+const [location, setLocation] = React.useState(null);
 
 
 function displayLocation(latitude,longitude ){
@@ -98,14 +98,11 @@ const api = {
 const [pollution, setPollution] = useState({});
 
 const getPollution = async() => {
-  markers.forEach(marker => {
-   fetch(`${api.base}air_pollution?lat=${marker.lat}&lon=${marker.lng}&APPID=${api.key}`)
+   fetch(`${api.base}air_pollution?lat=${markers[markers.length - 1].lat}&lon=${markers[markers.length - 1].lng}&APPID=${api.key}`)
    .then(res => res.json())
    .then(result => {
      setPollution(result);
-     // console.log(result);
    })
-    });
 }
 
 if (loadError) return "Error";
@@ -148,7 +145,10 @@ if (!isLoaded) return "Loading...";
             }}
           >
             <div>
-              <h3 onChange = {displayLocation(selected.lat, selected.lng)}>{location}</h3>
+              <h4 onChange = {displayLocation(selected.lat, selected.lng)}>{location}</h4>
+          <p>latitude: {selected.lat}</p>
+          <p>longitude: {selected.lng}</p>
+
               <p>As in {formatRelative(selected.time, new Date())}</p>
               <button onClick = {getPollution}>Get pollution</button>
               {(typeof pollution.list != "undefined" && pollution.list.length === 1) ? (
