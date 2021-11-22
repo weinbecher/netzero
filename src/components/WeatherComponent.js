@@ -7,7 +7,7 @@ const { DateTime } = require("luxon");
 
 // import * as d3 from 'd3';
 
-function WeatherComponent({ markers }) {
+function WeatherComponent({ markers, parentCallbackLogin }) {
   const [location, setLocation] = React.useState("");
 
   var date = Date();
@@ -22,7 +22,7 @@ function WeatherComponent({ markers }) {
   const [pollution, setPollution] = useState({});
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-
+  const[login, setLogin]= useState(false);
   const startDateTimestamp = (startDate / 1000) | 0;
   const endDateTimestamp = (endDate / 1000) | 0;
 
@@ -31,12 +31,6 @@ function WeatherComponent({ markers }) {
   console.log(markers);
 
   function displayLocation(latitude, longitude) {
-    console.log("query");
-    console.log("query");
-    console.log("query");
-    console.log("query");
-    console.log("query");
-
     Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
     Geocode.fromLatLng(latitude, longitude).then((response) => {
       const city = response.results[0].address_components[1].long_name;
@@ -58,6 +52,11 @@ function WeatherComponent({ markers }) {
         // setQuery("");
       });
   }
+
+  const sendLoginData = ()=>{
+      parentCallbackLogin(login);
+  }; 
+
 
   const getDateRangePollution = async () => {
     fetch(
@@ -91,14 +90,17 @@ function WeatherComponent({ markers }) {
       }
     >
       <main className="weather-box">
-        
-      <div className="city-info">
-          <h3> Location: {location} </h3>
+      <button onClick={sendLoginData}>
+        login
+      </button>
+
+        <div className="city-info">
+          <h3> please choose a location {location} </h3>
 
           {typeof weather.main != "undefined" ? (
             <div>
               <div className="location-box">
-                  {weather.name}, {weather.sys.country}
+                {weather.name}, {weather.sys.country}
               </div>
               <div className="weather-box">
                 <div className="temp">{Math.round(weather.main.temp)}°c</div>
@@ -108,30 +110,35 @@ function WeatherComponent({ markers }) {
           ) : (
             ""
           )}
-       
-        <div className="date-time-picker-start">
-          Start Date
-          <DatePicker
-            onChange={setStartDate}
-            value={startDate}
-            name={"Start Date"}
-            calendarType={"ISO 8601"}
-          />
-        </div>
-        <div className="date-time-picker-end">
-          End Date
-          <DatePicker onChange={setEndDate} value={endDate} name={"End Date"} />
-        </div>
-        <div className="pollution-data">
-          <button onClick={getDateRangePollution}>
-            Get pollution in date range
-          </button>
-        </div>
-        <br></br>
+
+          <div className="date-time-picker-start">
+            Start Date
+            <DatePicker
+              onChange={setStartDate}
+              value={startDate}
+              name={"Start Date"}
+              calendarType={"ISO 8601"}
+            />
+          </div>
+          <div className="date-time-picker-end">
+            End Date
+            <DatePicker
+              onChange={setEndDate}
+              value={endDate}
+              name={"End Date"}
+            />
+          </div>
+          <div className="pollution-data">
+            <button onClick={getDateRangePollution}>
+              Get pollution in date range
+            </button>
+          </div>
+          <br></br>
         </div>
 
         <div className="charts">
-          <LineChart id = "chart1"
+          <LineChart
+            id="chart1"
             width={300}
             height={300}
             data={pollution.list}
@@ -143,7 +150,8 @@ function WeatherComponent({ markers }) {
             <Tooltip />
           </LineChart>
 
-          <LineChart id = "chart2"
+          <LineChart
+            id="chart2"
             width={300}
             height={300}
             data={pollution.list}
@@ -155,9 +163,6 @@ function WeatherComponent({ markers }) {
             <Tooltip />
           </LineChart>
         </div>
-
-        
-
       </main>
     </div>
   );

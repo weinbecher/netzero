@@ -130,7 +130,7 @@ export default function MapComponent({ parentCallback }) {
             onClick={() => {
               setSelected(marker);
               sendData();
-            }}
+            }}  
           />
         ))}
 
