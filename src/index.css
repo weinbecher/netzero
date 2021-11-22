@@ -75,3 +75,16 @@ svg.react-date-picker__clear-button__icon.react-date-picker__button__icon {
 svg.react-date-picker__calendar-button__icon.react-date-picker__button__icon {
   stroke: antiquewhite;
 }
+.charts {
+  margin-left: -4em!important;
+  display: flex;
+  justify-content: space-between;
+}
+#chart1{
+}
+#chart2{
+}
+
+.main.weather-box {
+  padding-top: 5em;
+}

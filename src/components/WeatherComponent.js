@@ -26,16 +26,38 @@ function WeatherComponent({ markers }) {
   const startDateTimestamp = (startDate / 1000) | 0;
   const endDateTimestamp = (endDate / 1000) | 0;
 
-  //  console.log(markers);
+  console.log("markers");
 
-  const getWeather = async () => {
+  console.log(markers);
+
+  function displayLocation(latitude, longitude) {
+    console.log("query");
+    console.log("query");
+    console.log("query");
+    console.log("query");
+    console.log("query");
+
+    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
+    Geocode.fromLatLng(latitude, longitude).then((response) => {
+      const city = response.results[0].address_components[1].long_name;
+      console.log(city);
+      getWeather(city);
+      setLocation(city);
+    });
+    console.log("query");
+    console.log(setQuery);
+  }
+
+  function getWeather(query) {
+    console.log(query);
     fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
       .then((res) => res.json())
       .then((result) => {
         setWeather(result);
-        setQuery("");
+        console.log(weather);
+        // setQuery("");
       });
-  };
+  }
 
   const getDateRangePollution = async () => {
     fetch(
@@ -49,11 +71,12 @@ function WeatherComponent({ markers }) {
       .then((resultRange) => {
         setPollution(resultRange);
       });
+    displayLocation(
+      markers[markers.length - 1].lat,
+      markers[markers.length - 1].lng
+    );
   };
 
-  console.log("pollution");
-
-  console.log(pollution);
   // const formatXAxis = (date).forEach (date => {
   //   return moment(date).format('DD/MM/YY HH:mm')})
 
@@ -68,32 +91,24 @@ function WeatherComponent({ markers }) {
       }
     >
       <main className="weather-box">
-        <LineChart
-          width={400}
-          height={200}
-          data={pollution.list}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-        >
-          <Line type="monotone" dataKey="components.co" stroke="#8884d8" />
-          <XAxis dataKey="dt" domain={["dataMin", "dataMax"]} type="number" />
-          <YAxis />
-          <Tooltip />
-        </LineChart>
+        
+      <div className="city-info">
+          <h3> Location: {location} </h3>
 
-        <LineChart
-          width={400}
-          height={200}
-          data={pollution.list}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-        >
-          <Line type="monotone" dataKey="main.aqi" stroke="#8884d8" />
-          <XAxis dataKey="dt" domain={["dataMin", "dataMax"]} type="number" />
-          <YAxis />
-          <Tooltip />
-        </LineChart>
-
-        <h3> Location </h3>
-
+          {typeof weather.main != "undefined" ? (
+            <div>
+              <div className="location-box">
+                  {weather.name}, {weather.sys.country}
+              </div>
+              <div className="weather-box">
+                <div className="temp">{Math.round(weather.main.temp)}°c</div>
+                <div className="weather">{weather.weather[0].main}</div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+       
         <div className="date-time-picker-start">
           Start Date
           <DatePicker
@@ -113,6 +128,36 @@ function WeatherComponent({ markers }) {
           </button>
         </div>
         <br></br>
+        </div>
+
+        <div className="charts">
+          <LineChart id = "chart1"
+            width={300}
+            height={300}
+            data={pollution.list}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <Line type="monotone" dataKey="components.co" stroke="#8884d8" />
+            <XAxis dataKey="dt" domain={["dataMin", "dataMax"]} type="number" />
+            <YAxis />
+            <Tooltip />
+          </LineChart>
+
+          <LineChart id = "chart2"
+            width={300}
+            height={300}
+            data={pollution.list}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <Line type="monotone" dataKey="main.aqi" stroke="#8884d8" />
+            <XAxis dataKey="dt" domain={["dataMin", "dataMax"]} type="number" />
+            <YAxis />
+            <Tooltip />
+          </LineChart>
+        </div>
+
+        
+
       </main>
     </div>
   );
