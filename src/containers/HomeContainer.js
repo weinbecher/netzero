@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import MapComponent from "../components/MapComponent";
 import WeatherComponent from "../components/WeatherComponent";
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
 import {Fragment} from 'react';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import UserCompontent from "../components/UserCompontent";
+import {BrowserRouter as Router, Route, Routes, Switch, Redirect} from 'react-router-dom';
 
 export default function HomeContainer() {
   const [markers, setMarkers] = useState([]);
@@ -20,10 +19,10 @@ export default function HomeContainer() {
     setLogin(login);
   };
 
-  if (login === false) {
-    return <Navigate to="/login" />;
-  }
-
+  if (login == false) {
+    return <Redirect to="/user" />;
+  } 
+  
   return (
     <div>
       <Container fluid>
@@ -44,14 +43,14 @@ export default function HomeContainer() {
         <Row></Row>
       </Container>
 
-      <Router>
+      {/* <Router>
         <Fragment>
           <Routes>
             <Route path="/login" exact component={UserCompontent} />
             <Route to="/" component={HomeContainer}></Route>
           </Routes>
         </Fragment>
-      </Router>
+      </Router> */}
     </div>
   );
 }

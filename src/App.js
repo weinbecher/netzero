@@ -1,10 +1,11 @@
 import React from 'react';
 import HomeContainer from "./containers/HomeContainer";
+import MainContainer from "./containers/MainContainer";
 
 
 const App = () => {
   return (
-      <HomeContainer/>
+      <MainContainer/>
   );
 };
 export default App;

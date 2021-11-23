@@ -1,19 +1,17 @@
-import React, {Fragment} from 'react';
-import HomeContainer from "./containers/HomeContainer";
-import UserContainer from "./components/UserCompontent"
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import HomeContainer from "./HomeContainer";
+import UserCompontent from "../components/UserCompontent";
 
 export default function MainContainer() {
-  return(
-  <Router>
-          <Fragment>
-
-    <Routes>
-        <Route path="/login" exact component={UserContainer}/>
-        <Route to="/" component ={HomeContainer}></Route>
-    </Routes>
-    </Fragment>
-
-   </Router>
-  )};
-export default App;
+  return (
+    <Router>
+      <div>
+        <Switch>
+          <Route path="/user" component={UserCompontent} />
+          <Route path="/" component={HomeContainer} />
+        </Switch>
+      </div>
+    </Router>
+  );
+}

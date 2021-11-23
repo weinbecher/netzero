@@ -1,11 +1,9 @@
-import React from 'react'
+import React from "react";
 
 export default function UserCompontent() {
-
-    return (
-        <div>
-               <p> hi </p>      
-               
-        </div> 
-    )
+  return (
+    <div>
+      <h1> hi nishith 😉 </h1>
+    </div>
+  );
 }
