@@ -15,8 +15,8 @@ import mapStyles from "../mapStyles";
 
 const libraries = ["places"];
 const mapContainerStyle = {
-  height: "800px",
-  width: "1000px",
+  height: "40em",
+  width: "46em",
 };
 //custom options of google map
 const options = {

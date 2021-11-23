@@ -95,7 +95,7 @@ function WeatherComponent({ markers, parentCallbackLogin }) {
       </button>
 
         <div className="city-info">
-          <h3> please choose a location {location} </h3>
+          <h3> Location : {location} </h3>
 
           {typeof weather.main != "undefined" ? (
             <div>
